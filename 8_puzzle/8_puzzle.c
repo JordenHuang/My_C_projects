@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h>
 #include <conio.h>
-// #include <windows.h>
 
 #define UP -N
 #define RIGHT 1
@@ -14,6 +12,7 @@
 
 int N=3;
 int space_position = 0;
+int moves=0;
 
 
 
@@ -28,8 +27,8 @@ void swap(int board[], int index_a, int index_b){
 
 void scramble(int board[]){
     srand(time(NULL));
-    int swap_times = rand()%200 + 150;  // ¤@¶}©l¥´¶Ãªº¦¸¼Æ
-    int i, quotient, remain, direction;  // quotient¬Orow, remain¬Ocolumn
+    int swap_times = rand()%300 + 150;  // ä¸€é–‹å§‹æ‰“äº‚çš„æ¬¡æ•¸
+    int i, quotient, remain, direction;  // quotientæ˜¯row, remainæ˜¯column
     for(i=0; i<swap_times; i++){
         quotient = space_position/N;
         remain = space_position%N;
@@ -200,21 +199,25 @@ void user_input(int board[]){
                 // printf("UP");
                 if( valid_direction(board, 0)==0 ) break;
                 swap(board, space_position, space_position+UP);
+                moves++;
                 break;
             case 77:
                 // printf("RIGHT");
                 if( valid_direction(board, 1)==0 ) break;
                 swap(board, space_position, space_position+RIGHT);
+                moves++;
                 break;
             case 80:
                 // printf("DOWN");
                 if( valid_direction(board, 2)==0 ) break;
                 swap(board, space_position, space_position+DOWN);
+                moves++;
                 break;
             case 75:
                 // printf("LEFT");
                 if( valid_direction(board, 3)==0 ) break;
                 swap(board, space_position, space_position+LEFT);
+                moves++;
                 break;
         }
     }
@@ -224,24 +227,28 @@ void user_input(int board[]){
                 // printf("UP");
                 if( valid_direction(board, 0)==0 ) break;
                 swap(board, space_position, space_position+UP);
+                moves++;
                 break;
 
             case 100:
                 // printf("RIGHT");
                 if( valid_direction(board, 1)==0 ) break;
                 swap(board, space_position, space_position+RIGHT);
+                moves++;
                 break;
 
             case 115:
                 // printf("DOWN");
                 if( valid_direction(board, 2)==0 ) break;
                 swap(board, space_position, space_position+DOWN);
+                moves++;
                 break;
 
             case 97:
                 // printf("LEFT");
                 if( valid_direction(board, 3)==0 ) break;
                 swap(board, space_position, space_position+LEFT);
+                moves++;
                 break;
         }
     }
@@ -271,32 +278,34 @@ int main(){
     int solved_board[SIZE];
     int board[SIZE];
     int i, j, end;
+    time_t start_time, end_time;
+    double total_time;
     
 
     i = SIZE-1;
     solved_board[i] = 0;
     board[i] = 0;
-    for(i=0, j=1; i<SIZE-1; i++, j++){  // ªì©l¤Æ´Ñ½L
+    for(i=0, j=1; i<SIZE-1; i++, j++){  // åˆå§‹åŒ–æ£‹ç›¤
         solved_board[i] = j;
         board[i] = solved_board[i];
     }
 
     
-    space_position=SIZE-1;  // ªì©l¤Æspaceªº¦ì¸m
+    space_position=SIZE-1;  // åˆå§‹åŒ–spaceçš„ä½ç½®
 
-    scramble(board);  // ¥´¶Ã´Ñ½L
+    scramble(board);  // æ‰“äº‚æ£‹ç›¤
 
     while(1){
         printf("\x1b[2J\n");
 
-        for(i=0, j=0; i<SIZE+N; i++){  // ¿é¥X´Ñ½L  // size+N ¬O¦]¬°¦h¤F´«¦æªºcolumn
+        for(i=0, j=0; i<SIZE+N; i++){  // è¼¸å‡ºæ£‹ç›¤  // size+N æ˜¯å› ç‚ºå¤šäº†æ›è¡Œçš„column
             if(i==1){
                 printf("\033[H");
             }
             
             if(i%(N+1) != 0){
                 if(board[j]==0){
-                    printf("   ");
+                    printf("  â–¡");
                 }
                 else{
                     printf(" %2d", board[j]);
@@ -308,13 +317,22 @@ int main(){
             }
         }
         printf("\n\n");
-        end = end_game(board, solved_board);  // §PÂ_¬O§_§¹¦¨
+
+        end = end_game(board, solved_board);  // åˆ¤æ–·æ˜¯å¦å®Œæˆ
         if(end==1){
-            printf(" SOLVED!!\n");
+            time(&end_time);
+            printf(" SOLVED!!\n\n");
+            total_time = difftime(end_time, start_time);
+            printf("Total time: %.3f seconds\n", total_time);
+            printf("Total moves: %d", moves);
             break;
         }
 
-        user_input(board);  // ¨Ï¥ÎªÌ¿é¤J
+        user_input(board);  // ä½¿ç”¨è€…è¼¸å…¥
+
+        if(moves==1){
+            time(&start_time);
+        }
 
         printf("\x1b[H");
     }
